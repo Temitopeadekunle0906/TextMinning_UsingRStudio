@@ -1,0 +1,758 @@
+#Read data into the dataframe
+
+Reviews <- read.csv("tourist_accommodation_reviews.csv", header = TRUE)
+
+#Explore the data
+
+names(Reviews)
+head(Reviews)
+tail(Reviews)
+summary(Reviews)
+
+str(Reviews)
+dim(Reviews)
+
+#Install Packages
+
+library(tm)
+library(wordcloud)
+
+#Create Hotels/Restaurant specific subsets
+#Filter the Restuarant from the main dataset and create 30 separate datasets
+
+R_Tavern <- subset(Reviews,
+                                 Hotel.Restaurant.name=="The Tavern")
+                                          
+R_GreenTamarind<- subset(Reviews,
+                           Hotel.Restaurant.name=="Green Tamarind Kitchen")
+
+R_DeePlee<- subset(Reviews,
+                                 Hotel.Restaurant.name=="Dee Plee - Anantara Layan Phuket Resort")
+
+R_Eatbar<- subset(Reviews,
+                                Hotel.Restaurant.name=="EAT. bar & grill")
+
+R_39Italian<- subset(Reviews,
+                                Hotel.Restaurant.name=="+39 Italian Street Food")
+
+R_2gether<- subset(Reviews,
+                                Hotel.Restaurant.name=="2gether Restaurant")
+
+R_3spices<- subset(Reviews,
+                                Hotel.Restaurant.name=="3 Spices Restaurant")
+
+R_360Bar<- subset(Reviews,
+                                Hotel.Restaurant.name=="360 ° Bar")
+
+R_9SeaBreeze<- subset(Reviews,
+                                Hotel.Restaurant.name=="9' Sea Breeze")
+
+R_99Seafood<- subset(Reviews,
+                                Hotel.Restaurant.name=="99 Seafood")
+
+R_ASpoonfull<- subset(Reviews,
+                                Hotel.Restaurant.name=="A Spoonful of Sugar")
+
+R_Acqua<- subset(Reviews,
+                                Hotel.Restaurant.name=="Acqua Restaurant")
+
+R_AfterBeach<- subset(Reviews,
+                                Hotel.Restaurant.name=="After Beach Bar")
+
+
+R_SiamSupper<- subset(Reviews,
+                                Hotel.Restaurant.name=="Siam Supper Club")
+
+R_SamsSteaks<- subset(Reviews,
+                                Hotel.Restaurant.name=="Sam's Steaks and Grill")
+
+R_Istanbul<- subset(Reviews,
+                                Hotel.Restaurant.name=="Istanbul Turkish Restaurant")
+
+R_TheCorner<- subset(Reviews,
+                                Hotel.Restaurant.name=="The Corner Restaurant")
+
+R_ThePalm<- subset(Reviews,
+                                Hotel.Restaurant.name=="The Palm Cuisine")
+
+R_Tandoori<- subset(Reviews,
+                                Hotel.Restaurant.name=="Tandoori Flames")
+
+R_PadThaiShop<- subset(Reviews,
+                                Hotel.Restaurant.name=="Pad Thai Shop")
+
+R_GoldenParadise<- subset(Reviews,
+                                Hotel.Restaurant.name=="Golden Paradise Restaurant")
+
+R_MrCoffee<- subset(Reviews,
+                                Hotel.Restaurant.name=="Mr.Coffee")
+
+R_Flavor<- subset(Reviews,
+                                Hotel.Restaurant.name=="Flavor Phuket")
+
+R_BaanNoy<- subset(Reviews,
+                                Hotel.Restaurant.name=="Baan Noy Restaurant")
+
+R_SurinChill<- subset(Reviews,
+                                Hotel.Restaurant.name=="Surin Chill House")
+
+R_EnVogue<- subset(Reviews,
+                                Hotel.Restaurant.name=="En Vogue Restaurant")
+
+R_Chilli<- subset(Reviews,
+                                Hotel.Restaurant.name=="Chilli Kitchen")
+
+R_Kook<- subset(Reviews,
+                                Hotel.Restaurant.name=="Kook Restaurant")
+
+R_MKGold<- subset(Reviews,
+                          Hotel.Restaurant.name=="MK Gold Restaurant")
+
+R_Coconut<- subset(Reviews,
+                          Hotel.Restaurant.name=="Coconut-garden")
+
+R_Bitein<- subset(Reviews,
+                   Hotel.Restaurant.name=="Bite in")
+
+#Inspect the review column in the datasets
+
+head(R_Tavern$Review)
+head(R_GreenTamarind$Review)
+head(R_DeePlee$Review)
+head(R_Istanbul$Review)
+head(R_SurinChill$Review)
+head(R_Kook$Review)
+
+
+#Create text vectors  and cleaning ----
+
+review_R_Tavern<-R_Tavern$Review
+review_R_GreenTamarind<-R_GreenTamarind$Review
+review_R_DeePlee<-R_DeePlee$Review
+review_R_Eatbar<-R_Eatbar$Review
+review_R_39Italian<-R_39Italian$Review
+review_R_2gether<-R_2gether$Review
+review_R_3spices<-R_3spices$Review
+review_R_360Bar<-R_360Bar$Review
+review_R_9SeaBreeze<-R_9SeaBreeze$Review
+review_R_99Seafood<-R_99Seafood$Review
+review_R_ASpoonfull<-R_ASpoonfull$Review
+review_R_Acqua<-R_Acqua$Review
+review_R_AfterBeach<-R_AfterBeach$Review
+review_R_SiamSupper<-R_SiamSupper$Review
+review_R_SamsSteaks<-R_SamsSteaks$Review
+review_R_Istanbul<-R_Istanbul$Review
+review_R_TheCorner<-R_TheCorner$Review
+review_R_ThePalm<-R_ThePalm$Review
+review_R_Tandoori<-R_Tandoori$Review
+review_R_PadThaiShop<-R_PadThaiShop$Review
+review_R_GoldenParadise<-R_GoldenParadise$Review
+review_R_MrCoffee<-R_MrCoffee$Review
+review_R_Flavor<-R_Flavor$Review
+review_R_BaanNoy<-R_BaanNoy$Review
+review_R_SurinChill<-R_SurinChill$Review
+review_R_EnVogue<-R_EnVogue$Review
+review_R_Chilli<-R_Chilli$Review
+review_R_Kook<-R_Kook$Review
+review_R_MKGold<-R_MKGold$Review
+review_R_Coconut<-R_Coconut$Review
+review_R_Bitein<-R_Bitein$Review
+
+
+#Convert all text to lower case
+
+review_R_Tavern<-tolower(review_R_Tavern)
+review_R_GreenTamarind<-tolower(review_R_GreenTamarind)
+review_R_DeePlee<-tolower(review_R_DeePlee)
+review_R_Eatbar<-tolower(review_R_Eatbar)
+review_R_39Italian<-tolower(review_R_39Italian)
+review_R_2gether<-tolower(review_R_2gether)
+review_R_3spices<-tolower(review_R_3spices)
+review_R_360Bar<-tolower(review_R_360Bar)
+review_R_9SeaBreeze<-tolower(review_R_9SeaBreeze)
+review_R_99Seafood<-tolower(review_R_99Seafood)
+review_R_ASpoonfull<-tolower(review_R_ASpoonfull)
+review_R_Acqua<-tolower(review_R_Acqua)
+review_R_AfterBeach<-tolower(review_R_AfterBeach)
+review_R_SiamSupper<-tolower(review_R_SiamSupper)
+review_R_SamsSteaks<-tolower(review_R_SamsSteaks)
+review_R_Istanbul<-tolower(review_R_Istanbul)
+review_R_TheCorner<-tolower(review_R_TheCorner)
+review_R_ThePalm<-tolower(review_R_ThePalm)
+review_R_Tandoori<-tolower(review_R_Tandoori)
+review_R_PadThaiShop<-tolower(review_R_PadThaiShop)
+review_R_GoldenParadise<-tolower(review_R_GoldenParadise)
+review_R_MrCoffee<-tolower(review_R_MrCoffee)
+review_R_Flavor<-tolower(review_R_Flavor)
+review_R_BaanNoy<-tolower(review_R_BaanNoy)
+review_R_SurinChill<-tolower(review_R_SurinChill)
+review_R_EnVogue<-tolower(review_R_EnVogue)
+review_R_Chilli<-tolower(review_R_Chilli)
+review_R_Kook<-tolower(review_R_Kook)
+review_R_MKGold<-tolower(review_R_MKGold)
+review_R_Coconut<-tolower(review_R_Coconut)
+review_R_Bitein<-tolower(review_R_Bitein)
+
+#Remove links from the reviews
+
+review_R_Tavern<-gsub("http\\S+\\s*", "",review_R_Tavern)
+review_R_GreenTamarind<-gsub("http\\S+\\s*", "",review_R_GreenTamarind)
+review_R_DeePlee<-gsub("http\\S+\\s*", "",review_R_DeePlee)
+review_R_Eatbar<-gsub("http\\S+\\s*", "",review_R_Eatbar)
+review_R_39Italian<-gsub("http\\S+\\s*", "",review_R_39Italian)
+review_R_2gether<-gsub("http\\S+\\s*", "",review_R_2gether)
+review_R_3spices<-gsub("http\\S+\\s*", "",review_R_3spices)
+review_R_360Bar<-gsub("http\\S+\\s*", "",review_R_360Bar)
+review_R_9SeaBreeze<-gsub("http\\S+\\s*", "",review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("http\\S+\\s*", "",review_R_99Seafood)
+review_R_ASpoonfull<-gsub("http\\S+\\s*", "",review_R_ASpoonfull)
+review_R_Acqua<-gsub("http\\S+\\s*", "",review_R_Acqua)
+review_R_AfterBeach<-gsub("http\\S+\\s*", "",review_R_AfterBeach)
+review_R_SiamSupper<-gsub("http\\S+\\s*", "",review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("http\\S+\\s*", "",review_R_SamsSteaks)
+review_R_Istanbul<-gsub("http\\S+\\s*", "",review_R_Istanbul)
+review_R_TheCorner<-gsub("http\\S+\\s*", "",review_R_TheCorner)
+review_R_ThePalm<-gsub("http\\S+\\s*", "",review_R_ThePalm)
+review_R_Tandoori<-gsub("http\\S+\\s*", "",review_R_Tandoori)
+review_R_PadThaiShop<-gsub("http\\S+\\s*", "",review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("http\\S+\\s*", "",review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("http\\S+\\s*", "",review_R_MrCoffee)
+review_R_Flavor<-gsub("http\\S+\\s*", "",review_R_Flavor)
+review_R_BaanNoy<-gsub("http\\S+\\s*", "",review_R_BaanNoy)
+review_R_SurinChill<-gsub("http\\S+\\s*", "",review_R_SurinChill)
+review_R_EnVogue<-gsub("http\\S+\\s*", "",review_R_EnVogue)
+review_R_Chilli<-gsub("http\\S+\\s*", "",review_R_Chilli)
+review_R_Kook<-gsub("http\\S+\\s*", "",review_R_Kook)
+review_R_MKGold<-gsub("http\\S+\\s*", "",review_R_MKGold)
+review_R_Coconut<-gsub("http\\S+\\s*", "",review_R_Coconut)
+review_R_Bitein<-gsub("http\\S+\\s*", "",review_R_Bitein)
+
+
+#Remove punctuation from the reviews
+
+review_R_Tavern<-gsub("[[:punct:]]", "",review_R_Tavern)
+review_R_GreenTamarind<-gsub("[[:punct:]]", "",review_R_GreenTamarind)
+review_R_DeePlee<-gsub("[[:punct:]]", "",review_R_DeePlee)
+review_R_Eatbar<-gsub("[[:punct:]]", "",review_R_Eatbar)
+review_R_39Italian<-gsub("[[:punct:]]", "",review_R_39Italian)
+review_R_2gether<-gsub("[[:punct:]]", "",review_R_2gether)
+review_R_3spices<-gsub("[[:punct:]]", "",review_R_3spices)
+review_R_360Bar<-gsub("[[:punct:]]", "",review_R_360Bar)
+review_R_ASpoonfull<-gsub("[[:punct:]]", "",review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub("[[:punct:]]", "",review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("[[:punct:]]", "",review_R_99Seafood)
+review_R_Acqua<-gsub("[[:punct:]]", "",review_R_Acqua)
+review_R_AfterBeach<-gsub("[[:punct:]]", "",review_R_AfterBeach)
+review_R_SiamSupper<-gsub("[[:punct:]]", "",review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("[[:punct:]]", "",review_R_SamsSteaks)
+review_R_Istanbul<-gsub("[[:punct:]]", "",review_R_Istanbul)
+review_R_TheCorner<-gsub("[[:punct:]]", "",review_R_TheCorner)
+review_R_ThePalm<-gsub("[[:punct:]]", "",review_R_ThePalm)
+review_R_Tandoori<-gsub("[[:punct:]]", "",review_R_Tandoori)
+review_R_PadThaiShop<-gsub("[[:punct:]]", "",review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("[[:punct:]]", "",review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("[[:punct:]]", "",review_R_MrCoffee)
+review_R_Flavor<-gsub("[[:punct:]]", "",review_R_Flavor)
+review_R_BaanNoy<-gsub("[[:punct:]]", "",review_R_BaanNoy)
+review_R_SurinChill<-gsub("[[:punct:]]", "",review_R_SurinChill)
+review_R_EnVogue<-gsub("[[:punct:]]", "",review_R_EnVogue)
+review_R_Chilli<-gsub("[[:punct:]]", "",review_R_Chilli)
+review_R_Kook<-gsub("[[:punct:]]", "",review_R_Kook)
+review_R_MKGold<-gsub("[[:punct:]]", "",review_R_MKGold)
+review_R_Coconut<-gsub("[[:punct:]]", "",review_R_Coconut)
+review_R_Bitein<-gsub("[[:punct:]]", "",review_R_Bitein)
+
+#Remove digits from the reviews
+
+review_R_Tavern<-gsub("[[:digit:]]", "",review_R_Tavern)
+review_R_GreenTamarind<-gsub("[[:digit:]]", "",review_R_GreenTamarind)
+review_R_DeePlee<-gsub("[[:digit:]]", "",review_R_DeePlee)
+review_R_Eatbar<-gsub("[[:digit:]]", "",review_R_Eatbar)
+review_R_39Italian<-gsub("[[:digit:]]", "",review_R_39Italian)
+review_R_2gether<-gsub("[[:digit:]]", "",review_R_2gether)
+review_R_3spices<-gsub("[[:digit:]]", "",review_R_3spices)
+review_R_360Bar<-gsub("[[:digit:]]", "",review_R_360Bar)
+review_R_ASpoonfull<-gsub("[[:digit:]]", "",review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub("[[:digit:]]", "",review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("[[:digit:]]", "",review_R_99Seafood)
+review_R_Acqua<-gsub("[[:digit:]]", "",review_R_Acqua)
+review_R_AfterBeach<-gsub("[[:digit:]]", "",review_R_AfterBeach)
+review_R_SiamSupper<-gsub("[[:digit:]]", "",review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("[[:digit:]]", "",review_R_SamsSteaks)
+review_R_Istanbul<-gsub("[[:digit:]]", "",review_R_Istanbul)
+review_R_TheCorner<-gsub("[[:digit:]]", "",review_R_TheCorner)
+review_R_ThePalm<-gsub("[[:digit:]]", "",review_R_ThePalm)
+review_R_Tandoori<-gsub("[[:digit:]]", "",review_R_Tandoori)
+review_R_PadThaiShop<-gsub("[[:digit:]]", "",review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("[[:digit:]]", "",review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("[[:digit:]]", "",review_R_MrCoffee)
+review_R_Flavor<-gsub("[[:digit:]]", "",review_R_Flavor)
+review_R_BaanNoy<-gsub("[[:digit:]]", "",review_R_BaanNoy)
+review_R_SurinChill<-gsub("[[:digit:]]", "",review_R_SurinChill)
+review_R_EnVogue<-gsub("[[:digit:]]", "",review_R_EnVogue)
+review_R_Chilli<-gsub("[[:digit:]]", "",review_R_Chilli)
+review_R_Kook<-gsub("[[:digit:]]", "",review_R_Kook)
+review_R_MKGold<-gsub("[[:digit:]]", "",review_R_MKGold)
+review_R_Coconut<-gsub("[[:digit:]]", "",review_R_Coconut)
+review_R_Bitein<-gsub("[[:digit:]]", "",review_R_Bitein)
+
+
+#Remove leading blank spaces at the beginning from the reviews
+
+review_R_Tavern<-gsub("^ ", "", review_R_Tavern)
+review_R_GreenTamarind<-gsub("^ ", "", review_R_GreenTamarind)
+review_R_DeePlee<-gsub("^ ", "", review_R_DeePlee)
+review_R_Eatbar<-gsub("^ ", "", review_R_Eatbar)
+review_R_39Italian<-gsub("^ ", "", review_R_39Italian)
+review_R_2gether<-gsub("^ ", "", review_R_2gether)
+review_R_3spices<-gsub("^ ", "", review_R_3spices)
+review_R_360Bar<-gsub("^ ", "", review_R_360Bar)
+review_R_ASpoonfull<-gsub("^ ", "", review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub("^ ", "", review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("^ ", "", review_R_99Seafood)
+review_R_Acqua<-gsub("^ ", "", review_R_Acqua)
+review_R_AfterBeach<-gsub("^ ", "", review_R_AfterBeach)
+review_R_SiamSupper<-gsub("^ ", "", review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("^ ", "", review_R_SamsSteaks)
+review_R_Istanbul<-gsub("^ ", "", review_R_Istanbul)
+review_R_TheCorner<-gsub("^ ", "", review_R_TheCorner)
+review_R_ThePalm<-gsub("^ ", "", review_R_ThePalm)
+review_R_Tandoori<-gsub("^ ", "", review_R_Tandoori)
+review_R_PadThaiShop<-gsub("^ ", "", review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("^ ", "", review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("^ ", "", review_R_MrCoffee)
+review_R_Flavor<-gsub("^ ", "", review_R_Flavor)
+review_R_BaanNoy<-gsub("^ ", "", review_R_BaanNoy)
+review_R_SurinChill<-gsub("^ ", "", review_R_SurinChill)
+review_R_EnVogue<-gsub("^ ", "", review_R_EnVogue)
+review_R_Chilli<-gsub("^ ", "", review_R_Chilli)
+review_R_Kook<-gsub("^ ", "", review_R_Kook)
+review_R_MKGold<-gsub("^ ", "", review_R_MKGold)
+review_R_Coconut<-gsub("^ ", "", review_R_Coconut)
+review_R_Bitein<-gsub("^ ", "", review_R_Bitein)
+
+
+# Remove blank spaces at the end from the reviews
+
+review_R_Tavern<-gsub(" $", "", review_R_Tavern)
+review_R_GreenTamarind<-gsub(" $", "", review_R_GreenTamarind)
+review_R_DeePlee<-gsub(" $", "", review_R_DeePlee)
+review_R_Eatbar<-gsub(" $", "", review_R_Eatbar)
+review_R_39Italian<-gsub(" $", "", review_R_39Italian)
+review_R_2gether<-gsub(" $", "", review_R_2gether)
+review_R_3spices<-gsub(" $", "", review_R_3spices)
+review_R_360Bar<-gsub(" $", "", review_R_360Bar)
+review_R_ASpoonfull<-gsub(" $", "", review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub(" $", "", review_R_9SeaBreeze)
+review_R_99Seafood<-gsub(" $", "", review_R_99Seafood)
+review_R_Acqua<-gsub(" $", "", review_R_Acqua)
+review_R_AfterBeach<-gsub(" $", "", review_R_AfterBeach)
+review_R_SiamSupper<-gsub(" $", "", review_R_SiamSupper)
+review_R_SamsSteaks<-gsub(" $", "", review_R_SamsSteaks)
+review_R_Istanbul<-gsub(" $", "", review_R_Istanbul)
+review_R_TheCorner<-gsub(" $", "", review_R_TheCorner)
+review_R_ThePalm<-gsub(" $", "", review_R_ThePalm)
+review_R_Tandoori<-gsub(" $", "", review_R_Tandoori)
+review_R_PadThaiShop<-gsub(" $", "", review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub(" $", "", review_R_GoldenParadise)
+review_R_MrCoffee<-gsub(" $", "", review_R_MrCoffee)
+review_R_Flavor<-gsub(" $", "", review_R_Flavor)
+review_R_BaanNoy<-gsub(" $", "", review_R_BaanNoy)
+review_R_SurinChill<-gsub(" $", "", review_R_SurinChill)
+review_R_EnVogue<-gsub(" $", "", review_R_EnVogue)
+review_R_Chilli<-gsub(" $", "", review_R_Chilli)
+review_R_Kook<-gsub(" $", "", review_R_Kook)
+review_R_MKGold<-gsub(" $", "", review_R_MKGold)
+review_R_Coconut<-gsub(" $", "", review_R_Coconut)
+review_R_Bitein<-gsub(" $", "", review_R_Bitein)
+
+
+
+#Remove the word "Restaurant" from the review
+
+review_R_Tavern<-gsub("Restaurant", "", review_R_Tavern)
+review_R_GreenTamarind<-gsub("Restaurant", "", review_R_GreenTamarind)
+review_R_DeePlee<-gsub("Restaurant", "", review_R_DeePlee)
+review_R_Eatbar<-gsub("Restaurant", "", review_R_Eatbar)
+review_R_39Italian<-gsub("Restaurant", "", review_R_39Italian)
+review_R_2gether<-gsub("Restaurant", "", review_R_2gether)
+review_R_3spices<-gsub("Restaurant", "", review_R_3spices)
+review_R_360Bar<-gsub("Restaurant", "", review_R_360Bar)
+review_R_ASpoonfull<-gsub("Restaurant", "", review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub("Restaurant", "", review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("Restaurant", "", review_R_99Seafood)
+review_R_Acqua<-gsub("Restaurant", "", review_R_Acqua)
+review_R_AfterBeach<-gsub("Restaurant", "", review_R_AfterBeach)
+review_R_SiamSupper<-gsub("Restaurant", "", review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("Restaurant", "", review_R_SamsSteaks)
+review_R_Istanbul<-gsub("Restaurant", "", review_R_Istanbul)
+review_R_TheCorner<-gsub("Restaurant", "", review_R_TheCorner)
+review_R_ThePalm<-gsub("Restaurant", "", review_R_ThePalm)
+review_R_Tandoori<-gsub("Restaurant", "", review_R_Tandoori)
+review_R_PadThaiShop<-gsub("Restaurant", "", review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("Restaurant", "", review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("Restaurant", "", review_R_MrCoffee)
+review_R_Flavor<-gsub("Restaurant", "", review_R_Flavor)
+review_R_BaanNoy<-gsub("Restaurant", "", review_R_BaanNoy)
+review_R_SurinChill<-gsub("Restaurant", "", review_R_SurinChill)
+review_R_EnVogue<-gsub("Restaurant", "", review_R_EnVogue)
+review_R_Chilli<-gsub("Restaurant", "", review_R_Chilli)
+review_R_Kook<-gsub("Restaurant", "", review_R_Kook)
+review_R_MKGold<-gsub("Restaurant", "", review_R_MKGold)
+review_R_Coconut<-gsub("Restaurant", "", review_R_Coconut)
+review_R_Bitein<-gsub("Restaurant", "", review_R_Bitein)
+
+
+
+#Remove the word "Hotel" from the review
+
+review_R_Tavern<-gsub("Hotel", "", review_R_Tavern)
+review_R_GreenTamarind<-gsub("Hotel", "", review_R_GreenTamarind)
+review_R_DeePlee<-gsub("Hotel", "", review_R_DeePlee)
+review_R_Eatbar<-gsub("Hotel", "", review_R_Eatbar)
+review_R_39Italian<-gsub("Hotel", "", review_R_39Italian)
+review_R_2gether<-gsub("Hotel", "", review_R_2gether)
+review_R_3spices<-gsub("Hotel", "", review_R_3spices)
+review_R_360Bar<-gsub("Hotel", "", review_R_360Bar)
+review_R_ASpoonfull<-gsub("Hotel", "", review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub("Hotel", "", review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("Hotel", "", review_R_99Seafood)
+review_R_Acqua<-gsub("Hotel", "", review_R_Acqua)
+review_R_AfterBeach<-gsub("Hotel", "", review_R_AfterBeach)
+review_R_SiamSupper<-gsub("Hotel", "", review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("Hotel", "", review_R_SamsSteaks)
+review_R_Istanbul<-gsub("Hotel", "", review_R_Istanbul)
+review_R_TheCorner<-gsub("Hotel", "", review_R_TheCorner)
+review_R_ThePalm<-gsub("Hotel", "", review_R_ThePalm)
+review_R_Tandoori<-gsub("Hotel", "", review_R_Tandoori)
+review_R_PadThaiShop<-gsub("Hotel", "", review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("Hotel", "", review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("Hotel", "", review_R_MrCoffee)
+review_R_Flavor<-gsub("Hotel", "", review_R_Flavor)
+review_R_BaanNoy<-gsub("Hotel", "", review_R_BaanNoy)
+review_R_SurinChill<-gsub("Hotel", "", review_R_SurinChill)
+review_R_EnVogue<-gsub("Hotel", "", review_R_EnVogue)
+review_R_Chilli<-gsub("Hotel", "", review_R_Chilli)
+review_R_Kook<-gsub("Hotel", "", review_R_Kook)
+review_R_MKGold<-gsub("Hotel", "", review_R_MKGold)
+review_R_Coconut<-gsub("Hotel", "", review_R_Coconut)
+review_R_Bitein<-gsub("Hotel", "", review_R_Bitein)
+
+
+#Remove the word backslash n "\r\n" from the review
+
+review_R_Tavern<- gsub("[\r\n]", "", review_R_Tavern)
+review_R_GreenTamarind<-gsub("[\r\n]", "", review_R_GreenTamarind)
+review_R_DeePlee<-gsub("[\r\n]", "", review_R_DeePlee)
+review_R_Eatbar<-gsub("[\r\n]", "", review_R_Eatbar)
+review_R_39Italian<-gsub("[\r\n]", "", review_R_39Italian)
+review_R_2gether<-gsub("[\r\n]", "", review_R_2gether)
+review_R_3spices<-gsub("[\r\n]", "", review_R_3spices)
+review_R_360Bar<-gsub("[\r\n]", "", review_R_360Bar)
+review_R_ASpoonfull<-gsub("[\r\n]", "", review_R_ASpoonfull)
+review_R_9SeaBreeze<-gsub("[\r\n]", "", review_R_9SeaBreeze)
+review_R_99Seafood<-gsub("[\r\n]", "", review_R_99Seafood)
+review_R_Acqua<-gsub("[\r\n]", "", review_R_Acqua)
+review_R_AfterBeach<-gsub("[\r\n]", "", review_R_AfterBeach)
+review_R_SiamSupper<-gsub("[\r\n]", "", review_R_SiamSupper)
+review_R_SamsSteaks<-gsub("[\r\n]", "", review_R_SamsSteaks)
+review_R_Istanbul<-gsub("[\r\n]", "", review_R_Istanbul)
+review_R_TheCorner<-gsub("[\r\n]", "", review_R_TheCorner)
+review_R_ThePalm<-gsub("[\r\n]", "", review_R_ThePalm)
+review_R_Tandoori<-gsub("[\r\n]", "", review_R_Tandoori)
+review_R_PadThaiShop<-gsub("[\r\n]", "", review_R_PadThaiShop)
+review_R_GoldenParadise<-gsub("[\r\n]", "", review_R_GoldenParadise)
+review_R_MrCoffee<-gsub("[\r\n]", "", review_R_MrCoffee)
+review_R_Flavor<-gsub("[\r\n]", "", review_R_Flavor)
+review_R_BaanNoy<-gsub("[\r\n]", "", review_R_BaanNoy)
+review_R_SurinChill<-gsub("[\r\n]", "", review_R_SurinChill)
+review_R_EnVogue<-gsub("[\r\n]", "", review_R_EnVogue)
+review_R_Chilli<-gsub("[\r\n]", "", review_R_Chilli)
+review_R_Kook<-gsub("[\r\n]", "", review_R_Kook)
+review_R_MKGold<-gsub("[\r\n]", "", review_R_MKGold)
+review_R_Coconut<-gsub("[\r\n]", "", review_R_Coconut)
+review_R_Bitein<-gsub("[\r\n]", "", review_R_Bitein)
+
+
+
+#Inspect the vectors after cleaning
+head(review_R_Tavern)
+head(review_R_GreenTamarind)
+head(review_R_DeePlee)
+head(review_R_Eatbar)
+head(review_R_39Italian)
+head(review_R_2gether)
+head(review_R_3spices)
+head(review_R_360Bar)
+
+#Converting the text vectors to corpus
+
+corpus_R_Tavern <- Corpus(VectorSource(review_R_Tavern))
+corpus_R_GreenTamarind <- Corpus(VectorSource(review_R_GreenTamarind))
+corpus_R_DeePlee <- Corpus(VectorSource(review_R_DeePlee))
+corpus_R_Eatbar <- Corpus(VectorSource(review_R_Eatbar))
+corpus_R_39Italian <- Corpus(VectorSource(review_R_39Italian))
+corpus_R_2gether <- Corpus(VectorSource(review_R_2gether))
+corpus_R_3spices <- Corpus(VectorSource(review_R_3spices))
+corpus_R_360Bar <- Corpus(VectorSource(review_R_360Bar))
+corpus_R_ASpoonfull <- Corpus(VectorSource(review_R_ASpoonfull))
+corpus_R_9SeaBreeze <- Corpus(VectorSource(review_R_9SeaBreeze))
+corpus_R_99Seafood <- Corpus(VectorSource(review_R_99Seafood))
+corpus_R_Acqua <- Corpus(VectorSource(review_R_Acqua))
+corpus_R_AfterBeach <- Corpus(VectorSource(review_R_AfterBeach))
+corpus_R_SiamSupper <- Corpus(VectorSource(review_R_SiamSupper))
+corpus_R_SamsSteaks <- Corpus(VectorSource(review_R_SamsSteaks))
+corpus_R_Istanbul <- Corpus(VectorSource(review_R_Istanbul))
+corpus_R_TheCorner <- Corpus(VectorSource(review_R_TheCorner))
+corpus_R_ThePalm <- Corpus(VectorSource(review_R_ThePalm))
+corpus_R_Tandoori <- Corpus(VectorSource(review_R_Tandoori))
+corpus_R_PadThaiShop <- Corpus(VectorSource(review_R_PadThaiShop))
+corpus_R_GoldenParadise <- Corpus(VectorSource(review_R_GoldenParadise))
+corpus_R_MrCoffee <- Corpus(VectorSource(review_R_MrCoffee))
+corpus_R_Flavor <- Corpus(VectorSource(review_R_Flavor))
+corpus_R_BaanNoy <- Corpus(VectorSource(review_R_BaanNoy))
+corpus_R_SurinChill <- Corpus(VectorSource(review_R_SurinChill))
+corpus_R_EnVogue <- Corpus(VectorSource(review_R_EnVogue))
+corpus_R_Chilli <- Corpus(VectorSource(review_R_Chilli))
+corpus_R_Kook <- Corpus(VectorSource(review_R_Kook))
+corpus_R_MKGold <- Corpus(VectorSource(review_R_MKGold))
+corpus_R_Coconut <- Corpus(VectorSource(review_R_Coconut))
+corpus_R_Bitein <- Corpus(VectorSource(review_R_Bitein))
+
+                                 
+#Use the following commands to inspect the corpus.
+corpus_R_2gether
+corpus_R_3spices
+corpus_R_Acqua                                 
+
+
+#Clean up corpus by removing stop words and Whitespace
+corpus_R_Tavern  <- tm_map(corpus_R_Tavern, removeWords,stopwords("english")) 
+corpus_R_Tavern   <- tm_map(corpus_R_Tavern, stripWhitespace) 
+stem_corpus_R_Tavern  <- tm_map(corpus_R_Tavern, stemDocument)
+
+corpus_R_GreenTamarind  <- tm_map(corpus_R_GreenTamarind, removeWords,stopwords("english")) 
+corpus_R_GreenTamarind   <- tm_map(corpus_R_GreenTamarind, stripWhitespace) 
+stem_corpus_R_GreenTamarind  <- tm_map(corpus_R_GreenTamarind, stemDocument)
+
+corpus_R_DeePlee  <- tm_map(corpus_R_DeePlee, removeWords,stopwords("english")) 
+corpus_R_DeePlee   <- tm_map(corpus_R_DeePlee, stripWhitespace) 
+stem_corpus_R_DeePlee  <- tm_map(corpus_R_DeePlee, stemDocument)
+
+corpus_R_Eatbar  <- tm_map(corpus_R_Eatbar, removeWords,stopwords("english")) 
+corpus_R_Eatbar   <- tm_map(corpus_R_Eatbar, stripWhitespace) 
+stem_corpus_R_Eatbar  <- tm_map(corpus_R_Eatbar, stemDocument)
+
+corpus_R_39Italian  <- tm_map(corpus_R_39Italian, removeWords,stopwords("english")) 
+corpus_R_39Italian   <- tm_map(corpus_R_39Italian, stripWhitespace) 
+stem_corpus_R_39Italian  <- tm_map(corpus_R_39Italian, stemDocument)
+
+corpus_R_2gether  <- tm_map(corpus_R_2gether, removeWords,stopwords("english")) 
+corpus_R_2gether   <- tm_map(corpus_R_2gether, stripWhitespace) 
+stem_corpus_R_2gether  <- tm_map(corpus_R_2gether, stemDocument)
+
+corpus_R_3spices  <- tm_map(corpus_R_3spices, removeWords,stopwords("english")) 
+corpus_R_3spices   <- tm_map(corpus_R_3spices, stripWhitespace) 
+stem_corpus_R_3spices  <- tm_map(corpus_R_3spices, stemDocument)
+
+corpus_R_360Bar  <- tm_map(corpus_R_360Bar, removeWords,stopwords("english")) 
+corpus_R_360Bar   <- tm_map(corpus_R_360Bar, stripWhitespace) 
+stem_corpus_R_360Bar  <- tm_map(corpus_R_360Bar, stemDocument)
+
+corpus_R_ASpoonfull  <- tm_map(corpus_R_ASpoonfull, removeWords,stopwords("english")) 
+corpus_R_ASpoonfull   <- tm_map(corpus_R_ASpoonfull, stripWhitespace) 
+stem_corpus_R_ASpoonfull  <- tm_map(corpus_R_ASpoonfull, stemDocument)
+
+corpus_R_9SeaBreeze  <- tm_map(corpus_R_9SeaBreeze, removeWords,stopwords("english")) 
+corpus_R_9SeaBreeze   <- tm_map(corpus_R_9SeaBreeze, stripWhitespace) 
+stem_corpus_R_9SeaBreeze  <- tm_map(corpus_R_9SeaBreeze, stemDocument)
+
+corpus_R_99Seafood  <- tm_map(corpus_R_99Seafood, removeWords,stopwords("english")) 
+corpus_R_99Seafood   <- tm_map(corpus_R_99Seafood, stripWhitespace) 
+stem_corpus_R_99Seafood  <- tm_map(corpus_R_99Seafood, stemDocument)
+
+corpus_R_Acqua  <- tm_map(corpus_R_Acqua, removeWords,stopwords("english")) 
+corpus_R_Acqua  <- tm_map(corpus_R_Acqua, stripWhitespace) 
+stem_corpus_R_Acqua  <- tm_map(corpus_R_Acqua, stemDocument)
+
+corpus_R_AfterBeach  <- tm_map(corpus_R_AfterBeach, removeWords,stopwords("english")) 
+corpus_R_AfterBeach  <- tm_map(corpus_R_AfterBeach, stripWhitespace) 
+stem_corpus_R_AfterBeach  <- tm_map(corpus_R_AfterBeach, stemDocument)
+
+
+corpus_R_SiamSupper  <- tm_map(corpus_R_SiamSupper, removeWords,stopwords("english")) 
+corpus_R_SiamSupper  <- tm_map(corpus_R_SiamSupper, stripWhitespace) 
+stem_corpus_R_SiamSupper  <- tm_map(corpus_R_SiamSupper, stemDocument)
+
+corpus_R_SamsSteaks  <- tm_map(corpus_R_SamsSteaks, removeWords,stopwords("english")) 
+corpus_R_SamsSteaks  <- tm_map(corpus_R_SamsSteaks, stripWhitespace) 
+stem_corpus_R_SamsSteaks  <- tm_map(corpus_R_SamsSteaks, stemDocument)
+
+corpus_R_Istanbul  <- tm_map(corpus_R_Istanbul, removeWords,stopwords("english")) 
+corpus_R_Istanbul  <- tm_map(corpus_R_Istanbul, stripWhitespace) 
+stem_corpus_R_Istanbul  <- tm_map(corpus_R_Istanbul, stemDocument)
+
+corpus_R_TheCorner  <- tm_map(corpus_R_TheCorner, removeWords,stopwords("english")) 
+corpus_R_TheCorner  <- tm_map(corpus_R_TheCorner, stripWhitespace) 
+stem_corpus_R_TheCorner  <- tm_map(corpus_R_TheCorner, stemDocument)
+
+corpus_R_ThePalm  <- tm_map(corpus_R_ThePalm, removeWords,stopwords("english")) 
+corpus_R_ThePalm  <- tm_map(corpus_R_ThePalm, stripWhitespace) 
+stem_corpus_R_ThePalm  <- tm_map(corpus_R_ThePalm, stemDocument)
+
+corpus_R_Tandoori  <- tm_map(corpus_R_Tandoori, removeWords,stopwords("english")) 
+corpus_R_Tandoori  <- tm_map(corpus_R_Tandoori, stripWhitespace) 
+stem_corpus_R_Tandoori  <- tm_map(corpus_R_Tandoori, stemDocument)
+
+corpus_R_PadThaiShop  <- tm_map(corpus_R_PadThaiShop, removeWords,stopwords("english")) 
+corpus_R_PadThaiShop  <- tm_map(corpus_R_PadThaiShop, stripWhitespace) 
+stem_corpus_R_PadThaiShop  <- tm_map(corpus_R_PadThaiShop, stemDocument)
+
+corpus_R_GoldenParadise <- tm_map(corpus_R_GoldenParadise, removeWords,stopwords("english")) 
+corpus_R_GoldenParadise  <- tm_map(corpus_R_GoldenParadise, stripWhitespace) 
+stem_corpus_R_GoldenParadise  <- tm_map(corpus_R_GoldenParadise, stemDocument)
+
+corpus_R_MrCoffee <- tm_map(corpus_R_MrCoffee, removeWords,stopwords("english")) 
+corpus_R_MrCoffee  <- tm_map(corpus_R_MrCoffee, stripWhitespace) 
+stem_corpus_R_MrCoffee  <- tm_map(corpus_R_MrCoffee, stemDocument)
+
+corpus_R_Flavor <- tm_map(corpus_R_Flavor, removeWords,stopwords("english")) 
+corpus_R_Flavor  <- tm_map(corpus_R_Flavor, stripWhitespace) 
+stem_corpus_R_Flavor  <- tm_map(corpus_R_Flavor, stemDocument)
+
+corpus_R_BaanNoy <- tm_map(corpus_R_BaanNoy, removeWords,stopwords("english")) 
+corpus_R_BaanNoy  <- tm_map(corpus_R_BaanNoy, stripWhitespace) 
+stem_corpus_R_BaanNoy  <- tm_map(corpus_R_BaanNoy, stemDocument)
+
+corpus_R_SurinChill <- tm_map(corpus_R_SurinChill, removeWords,stopwords("english")) 
+corpus_R_SurinChill  <- tm_map(corpus_R_SurinChill, stripWhitespace) 
+stem_corpus_R_SurinChill  <- tm_map(corpus_R_SurinChill, stemDocument)
+
+corpus_R_EnVogue <- tm_map(corpus_R_EnVogue, removeWords,stopwords("english")) 
+corpus_R_EnVogue  <- tm_map(corpus_R_EnVogue, stripWhitespace) 
+stem_corpus_R_EnVogue  <- tm_map(corpus_R_EnVogue, stemDocument)
+
+corpus_R_Chilli <- tm_map(corpus_R_Chilli, removeWords,stopwords("english")) 
+corpus_R_Chilli <- tm_map(corpus_R_Chilli, stripWhitespace) 
+stem_corpus_R_Chilli  <- tm_map(corpus_R_Chilli, stemDocument)
+
+corpus_R_Kook <- tm_map(corpus_R_Kook, removeWords,stopwords("english")) 
+corpus_R_Kook <- tm_map(corpus_R_Kook, stripWhitespace) 
+stem_corpus_R_Kook  <- tm_map(corpus_R_Kook, stemDocument)
+
+corpus_R_MKGold <- tm_map(corpus_R_MKGold, removeWords,stopwords("english")) 
+corpus_R_MKGold <- tm_map(corpus_R_MKGold, stripWhitespace) 
+stem_corpus_R_MKGold  <- tm_map(corpus_R_MKGold, stemDocument)
+
+corpus_R_Coconut <- tm_map(corpus_R_Coconut, removeWords,stopwords("english")) 
+corpus_R_Coconut <- tm_map(corpus_R_Coconut, stripWhitespace) 
+stem_corpus_R_Coconut  <- tm_map(corpus_R_Coconut, stemDocument)
+
+corpus_R_Bitein <- tm_map(corpus_R_Bitein, removeWords,stopwords("english")) 
+corpus_R_Bitein <- tm_map(corpus_R_Bitein, stripWhitespace) 
+stem_corpus_R_Bitein  <- tm_map(corpus_R_Bitein, stemDocument)
+
+library(SnowballC)
+
+#Load the positive and negative lexicon data
+
+positive_lexicon <- read.csv("positive-lexicon.txt", header = F) 
+negative_lexicon <- read.csv("negative-lexicon.txt", header = F)
+
+#Inspect lexicons
+head(positive_lexicon) 
+tail(positive_lexicon)
+
+head(negative_lexicon) 
+tail(negative_lexicon)
+
+#Create function for sentimental analysis
+
+sentiment <- function(stem_corpus)  
+{ 
+  
+  #generate wordclouds 
+  wordcloud(stem_corpus, 
+            min.freq = 3, 
+            colors=brewer.pal(8, "Dark2"), 
+            random.color = TRUE, 
+            max.words = 100) 
+  
+  
+  #Create variables and vectors 
+  total_pos_count <- 0 
+  total_neg_count <- 0 
+  pos_count_vector <- c() 
+  neg_count_vector <- c() 
+  
+  
+  size <- length(stem_corpus) 
+  
+  for(i in 1:size) 
+  { 
+    
+    #All the words in current review 
+    corpus_words<- list(strsplit(stem_corpus[[i]]$content, split = " ")) 
+    
+    
+    #positive words in current review
+    pos_count <-length(intersect(unlist(corpus_words), unlist(positive_lexicon))) 
+    
+    
+    #negative words in current review   
+    neg_count <- length(intersect(unlist(corpus_words), unlist(negative_lexicon))) 
+    
+    total_pos_count <- total_pos_count + pos_count
+    total_neg_count <- total_neg_count + neg_count
+  }
+  total_pos_count                                   
+  total_neg_count                                  
+  total_count <- total_pos_count + total_neg_count 
+  
+  overall_positive_percentage <- (total_pos_count*100)/total_count 
+  overall_negative_percentage <- (total_neg_count*100)/total_count 
+  overall_positive_percentage  
+  
+  
+  #Create a dataframe with  all the positive and negative reviews  
+  df<-data.frame(Review_Type=c("Postive","Negitive"), 
+                 Count=c(total_pos_count ,total_neg_count  )) 
+  print(df) #Print 
+  
+  overall_positive_percentage<-paste("Percentage of Positive Reviews:", 
+                                     round(overall_positive_percentage,2),"%") 
+  
+  return(overall_positive_percentage)
+} 
+
+sentiment(stem_corpus_R_Tavern)
+sentiment(stem_corpus_R_GreenTamarind)
+sentiment(stem_corpus_R_DeePlee)
+sentiment(stem_corpus_R_Eatbar)
+sentiment(stem_corpus_R_39Italian)
+sentiment(stem_corpus_R_2gether)
+sentiment(stem_corpus_R_3spices)
+sentiment(stem_corpus_R_360Bar)
+sentiment(stem_corpus_R_ASpoonfull)
+sentiment(stem_corpus_R_9SeaBreeze)
+sentiment(stem_corpus_R_99Seafood)
+sentiment(stem_corpus_R_Acqua)
+sentiment(stem_corpus_R_AfterBeach)
+sentiment(stem_corpus_R_Siamsupper)
+sentiment(stem_corpus_R_SamsSteaks)
+sentiment(stem_corpus_R_Istanbul)
+sentiment(stem_corpus_R_TheCorner)
+sentiment(stem_corpus_R_ThePalm)
+sentiment(stem_corpus_R_Tandoori)
+sentiment(stem_corpus_R_PadThaiShop)
+sentiment(stem_corpus_R_GoldenParadise)
+sentiment(stem_corpus_R_MrCoffee)
+sentiment(stem_corpus_R_Flavor)
+sentiment(stem_corpus_R_BaanNoy)
+sentiment(stem_corpus_R_SurinChill)
+sentiment(stem_corpus_R_EnVogue)
+sentiment(stem_corpus_R_Chilli)
+sentiment(stem_corpus_R_Kook)
+sentiment(stem_corpus_R_MKGold)
+sentiment(stem_corpus_R_Coconut)
+sentiment(stem_corpus_R_Bitein)
